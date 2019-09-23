@@ -112,7 +112,7 @@ func SaveFirstFile(c *gin.Context, fileFieldName string) (string, int64, error) 
 	filename := header.Filename
 
 	// создаем имя директории для хранения файлов
-	saveDir := Params.Localdir + "/obc/" + time.Now().Format("2006/01/02") + "/" + UlidNum(10000, 99999) + "/"
+	saveDir := Params.Localdir + "/file_uploader/" + time.Now().Format("2006/01/02") + "/" + UlidNum(10000, 99999) + "/"
 	err = os.MkdirAll(saveDir, os.ModePerm)
 	if err != nil {
 		return "", 0, errors.New(fmt.Sprintln("SaveFirstFile 2:", err))

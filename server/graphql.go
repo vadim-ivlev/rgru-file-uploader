@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"os"
-	"path"
+
+	// "fmt"
+	// "os"
+	// "path"
 	"path/filepath"
 
 	// "go/ast"
@@ -57,54 +58,27 @@ func getPayload3(c *gin.Context) (query string, variables map[string]interface{}
 	return
 }
 
-// SaveUploadedFile - сохраняет первый присоединенный в поле fileFieldName файл во временную директорию,
-// загружает его на сервер и удаляет его из временной директории.
-// Возвращает путь файла на сервере, размер файла, сообщение об ошибке.
-func SaveUploadedFile(params gq.ResolveParams, fileFieldName string) (finalPath string, size int64, errMsg string) {
-	// сохраняем
-	filePath, size, err := img.SaveFirstFormFile(params, fileFieldName)
-	if err != nil {
-		return "", 0, err.Error()
-	}
-	finalPath = img.TrimLocaldir(filePath)
-	return finalPath, size, ""
-}
-
 // SaveUploadedImage - сохраняет первый присоединенный в поле fileFieldName файл во временную директорию,
-// оптимизирует его размер и порождает иконки разных размеров.
-// Загружает полученные файлы на сервер и удаляет их из временной директории.
-// Возвращает путь файла на сервере, ширину и высоту изображения, JSON строку иконок,  сообщение об ошибке.
+// оптимизирует его размер. Возвращает путь файла на сервере, ширину и высоту изображения.
 func SaveUploadedImage(params gq.ResolveParams, fileFieldName string) (
-	serverPath string, width int, height int, thumbsJSONStr string, errMsg string) {
+	serverPath string, width int, height int, size int64, errMsg string) {
 
 	// сохраняем изображение
-	filePath, _, err := img.SaveFirstFormFile(params, fileFieldName)
+	filePath, size, err := img.SaveFirstFormFile(params, fileFieldName)
 	if err != nil {
-		return "", 0, 0, "", "SaveUploadedImage(): " + err.Error()
+		return "", 0, 0, 0, "SaveUploadedImage(): " + err.Error()
 	}
-
-	// проверяем допустимо ли расширение
-	if !img.Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
-		// удаляем файлы вместе с директорией
-		dir := path.Dir(filePath)
-		if err = os.RemoveAll(dir); err != nil {
-			errMsg += "SaveUploadedImage().InvalidExt.RemoveAll(): " + err.Error() + " \n"
-		}
-		return "", 0, 0, "", "SaveUploadedImage(): Wrong file type. Should be:" + fmt.Sprintf("%v", img.Params.ValidImgExtensions)
-	}
-
 	serverPath = img.TrimLocaldir(filePath)
 
-	// оптимизируем изображение
-	filePath, width, height = img.OptimizeImage(filePath)
-
-	// Генерируем иконки
-	thumbsJSONStr, err = img.GenerateIcons(filePath)
-	if err != nil {
-		errMsg = "SaveUploadedImage(): " + err.Error()
+	// проверяем расширение файла. Если это не изображение возвращаем как есть
+	if !img.Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
+		return serverPath, 0, 0, size, errMsg
 	}
 
-	return serverPath, width, height, thumbsJSONStr, errMsg
+	// иначе оптимизируем изображение
+	_, width, height = img.OptimizeImage(filePath)
+
+	return serverPath, width, height, size, errMsg
 }
 
 // G R A P H Q L ********************************************************************************

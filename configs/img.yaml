@@ -10,10 +10,10 @@ dev:
 
   # При загрузке изображения на сервер генерируем следующие иконки
   thumbs_template:
-  - type: small
-    width: 200
-    height: 134
-    path:
+  # - type: small
+  #   width: 200
+  #   height: 134
+  #   path:
 
 
 docker:

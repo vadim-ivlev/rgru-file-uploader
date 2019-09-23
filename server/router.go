@@ -30,5 +30,5 @@ func Setup() *gin.Engine {
 // Serve запускает сервер на заданном порту.
 func Serve(port string) {
 	r := Setup()
-	r.Run(port)
+	_ = r.Run(port)
 }

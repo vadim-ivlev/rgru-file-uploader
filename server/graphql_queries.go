@@ -9,17 +9,12 @@ import (
 var rootQuery = gq.NewObject(gq.ObjectConfig{
 	Name: "Query",
 	Fields: gq.Fields{
-		"get_image": &gq.Field{
-			Type:        imageType,
-			Description: "Показать изображение по идентификатору",
-			Args: gq.FieldConfigArgument{
-				"id": &gq.ArgumentConfig{
-					Type:        gq.NewNonNull(gq.Int),
-					Description: "Идентификатор изображения",
-				},
-			},
+		"ping": &gq.Field{
+			Type:        gq.String,
+			Description: "Тестовый метод",
+			Args:        gq.FieldConfigArgument{},
 			Resolve: func(params gq.ResolveParams) (interface{}, error) {
-				return nil, nil
+				return "pong", nil
 			},
 		},
 	},
