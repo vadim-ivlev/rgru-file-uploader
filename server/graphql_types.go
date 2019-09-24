@@ -1,29 +1,33 @@
 package server
 
 import (
-	gq "github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql"
 )
 
 // TYPES ****************************************************
 
-var imageType = gq.NewObject(gq.ObjectConfig{
+var imageType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "File",
 	Description: "Файл. width и height поля имеют смысл только для файлов изображений",
-	Fields: gq.Fields{
-		"filepath": &gq.Field{
-			Type:        gq.String,
+	Fields: graphql.Fields{
+		"filepath": &graphql.Field{
+			Type:        graphql.String,
 			Description: "URI изображения",
 		},
-		"width": &gq.Field{
-			Type:        gq.Int,
+		"width": &graphql.Field{
+			Type:        graphql.Int,
 			Description: "Ширина в пикселях",
 		},
-		"height": &gq.Field{
-			Type:        gq.Int,
+		"height": &graphql.Field{
+			Type:        graphql.Int,
 			Description: "Высота в пикселях",
 		},
-		"size": &gq.Field{
-			Type:        gq.Int,
+		"size": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "Размер оптимизированного файла в байтах",
+		},
+		"initial_size": &graphql.Field{
+			Type:        graphql.Int,
 			Description: "Размер файла в байтах",
 		},
 	},

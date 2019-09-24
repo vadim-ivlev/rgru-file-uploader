@@ -1,19 +1,19 @@
 package server
 
 import (
-	gq "github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql"
 )
 
 // ************************************************************************
 
-var rootQuery = gq.NewObject(gq.ObjectConfig{
+var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
-	Fields: gq.Fields{
-		"ping": &gq.Field{
-			Type:        gq.String,
+	Fields: graphql.Fields{
+		"ping": &graphql.Field{
+			Type:        graphql.String,
 			Description: "Тестовый метод",
-			Args:        gq.FieldConfigArgument{},
-			Resolve: func(params gq.ResolveParams) (interface{}, error) {
+			Args:        graphql.FieldConfigArgument{},
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				return "pong", nil
 			},
 		},

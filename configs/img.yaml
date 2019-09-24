@@ -9,7 +9,7 @@ dev:
   max_image_width: 1440
 
   # При загрузке изображения на сервер генерируем следующие иконки
-  thumbs_template:
+  # thumbs_template:
   # - type: small
   #   width: 200
   #   height: 134
@@ -27,11 +27,11 @@ docker:
   max_image_width: 1440
 
   # При загрузке изображения на сервер генерируем следующие иконки
-  thumbs_template:
-  - type: small
-    width: 200
-    height: 134
-    path:
+  # thumbs_template:
+  # - type: small
+  #   width: 200
+  #   height: 134
+  #   path:
 
 
 prod:
@@ -45,10 +45,10 @@ prod:
   max_image_width: 1440
 
   # При загрузке изображения на сервер генерируем следующие иконки
-  thumbs_template:
-  - type: small
-    width: 200
-    height: 134
-    path:
+  # thumbs_template:
+  # - type: small
+  #   width: 200
+  #   height: 134
+  #   path:
 
 

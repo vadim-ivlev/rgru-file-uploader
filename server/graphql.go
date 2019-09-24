@@ -4,20 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-
-	// "fmt"
-	// "os"
-	// "path"
-	"path/filepath"
-
-	// "go/ast"
 	"net/http"
-	"strings"
-
-	"rgru-file-uploader/pkg/img"
 
 	"github.com/gin-gonic/gin"
-	gq "github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql"
 )
 
 // FUNCTIONS *******************************************************
@@ -58,32 +48,9 @@ func getPayload3(c *gin.Context) (query string, variables map[string]interface{}
 	return
 }
 
-// SaveUploadedImage - сохраняет первый присоединенный в поле fileFieldName файл во временную директорию,
-// оптимизирует его размер. Возвращает путь файла на сервере, ширину и высоту изображения.
-func SaveUploadedImage(params gq.ResolveParams, fileFieldName string) (
-	serverPath string, width int, height int, size int64, errMsg string) {
-
-	// сохраняем изображение
-	filePath, size, err := img.SaveFirstFormFile(params, fileFieldName)
-	if err != nil {
-		return "", 0, 0, 0, "SaveUploadedImage(): " + err.Error()
-	}
-	serverPath = img.TrimLocaldir(filePath)
-
-	// проверяем расширение файла. Если это не изображение возвращаем как есть
-	if !img.Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
-		return serverPath, 0, 0, size, errMsg
-	}
-
-	// иначе оптимизируем изображение
-	_, width, height = img.OptimizeImage(filePath)
-
-	return serverPath, width, height, size, errMsg
-}
-
 // G R A P H Q L ********************************************************************************
 
-var schema, _ = gq.NewSchema(gq.SchemaConfig{
+var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query:    rootQuery,
 	Mutation: rootMutation,
 })
@@ -94,7 +61,7 @@ func GraphQL(c *gin.Context) {
 
 	query, variables := getPayload3(c)
 
-	result := gq.Do(gq.Params{
+	result := graphql.Do(graphql.Params{
 		Schema:         schema,
 		RequestString:  query,
 		Context:        context.WithValue(context.Background(), "ginContext", c),

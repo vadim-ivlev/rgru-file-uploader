@@ -2,7 +2,6 @@
 package img
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"image"
@@ -10,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -23,20 +23,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Thumb - описатель иконки изображения. Используем для resize, move etc.
-type Thumb struct {
-	Type     string `json:"type"`
-	Width    int    `json:"width"`
-	Height   int    `json:"height"`
-	Filepath string `json:"filepath"`
-}
-
 // Params - общие параметры хранимые в YAML
 type connectionParams struct {
 	Localdir           string          `yaml:"localdir"`
 	ValidImgExtensions map[string]bool `yaml:"valid_img_extensions"`
 	MaxImageWidth      int             `yaml:"max_image_width"`
-	ThumbsTemplate     []Thumb         `yaml:"thumbs_template"`
 }
 
 var Params connectionParams
@@ -67,30 +58,19 @@ func AppendToName(fileName string, str string) string {
 
 // saveImageToFile - Сохраняет файл.
 // Возвращает путь к сохраненному файлу.
-func saveImageToFile(dst image.Image, filePath string) string {
+func saveImageToFile(dst image.Image, filePath string) int64 {
 	err := imaging.Save(dst, filePath)
 	if err != nil {
 		log.Println("saveImageToFile(): ", err.Error())
-		return ""
+		return 0
 	}
-	return filePath
-}
-
-// thumbImage - генерирует уменьшенное изображение, заданное шириной и высотой.
-// Возвращает масштабированное изображение, его ширину и высоту в пикселях.
-func thumbImage(im image.Image, thumbWidth int, thumbHeight int) (dst image.Image, width int, height int) {
-	b := im.Bounds()
-	width = b.Dx()
-	height = b.Dy()
-	anchor := imaging.Top
-	if width/height > thumbWidth/thumbHeight {
-		anchor = imaging.Center
+	fi, err := os.Stat(filePath)
+	if err != nil {
+		return 0
 	}
-	dst = imaging.Fill(im, thumbWidth, thumbHeight, anchor, imaging.Lanczos)
-	b = dst.Bounds()
-	width = b.Dx()
-	height = b.Dy()
-	return dst, width, height
+	// get the size
+	size := fi.Size()
+	return size
 }
 
 // UlidNum - возвращает случайную строку числа в диапазоне [min,max)
@@ -98,6 +78,13 @@ func UlidNum(min, max int) string {
 	t := time.Now().UnixNano()
 	rand.Seed(t)
 	return strconv.Itoa(rand.Intn(max-min) + min)
+}
+
+// CreateNewDirectory создаем директорию для хранения файлов
+func CreateNewDirectory() (path string, err error) {
+	saveDir := Params.Localdir + "/" + time.Now().Format("2006/01/02") + "/" + UlidNum(10000, 99999) + "/"
+	err = os.MkdirAll(saveDir, os.ModePerm)
+	return saveDir, nil
 }
 
 // SaveFirstFile - сохраняет первый загруженный файл поля fileFieldName во временную директорию
@@ -111,9 +98,8 @@ func SaveFirstFile(c *gin.Context, fileFieldName string) (string, int64, error) 
 	}
 	filename := header.Filename
 
-	// создаем имя директории для хранения файлов
-	saveDir := Params.Localdir + "/file_uploader/" + time.Now().Format("2006/01/02") + "/" + UlidNum(10000, 99999) + "/"
-	err = os.MkdirAll(saveDir, os.ModePerm)
+	// создаем директорию для хранения файлов
+	saveDir, err := CreateNewDirectory()
 	if err != nil {
 		return "", 0, errors.New(fmt.Sprintln("SaveFirstFile 2:", err))
 	}
@@ -158,17 +144,50 @@ func SaveFirstFormFile(p graphql.ResolveParams, fileFieldName string) (string, i
 	return tempFile, size, nil
 }
 
+// DownloadFile сохраняет файл из интернета в локальный файл, не загружая его в оперативную память.
+// Эффективен, поскольку пишет на диск по мере получения данных из интернет.
+// Измененный код из: https://golangcode.com/download-a-file-from-a-url/
+func DownloadFile(filepath string, url string) (size int64, err error) {
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return 0, err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	size, err = io.Copy(out, resp.Body)
+	return size, err
+}
+
+// OptimizeIfImage Оптимизирует изображение с разрешенными расширениями
+func OptimizeIfImage(filePath string) (size int64, width int, height int) {
+	// Если это изображение оптимизируем его
+	if Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
+		size, width, height = OptimizeImage(filePath)
+		return size, width, height
+	}
+	return 0, 0, 0
+}
+
 // OptimizeImage - уменьшает изображение если нужно,
 // Возвращает путь к оптимизированному изображению, его ширину и высоту
-func OptimizeImage(filePath string) (path string, width int, height int) {
+func OptimizeImage(filePath string) (size int64, width int, height int) {
 	img, err := imaging.Open(filePath)
 	if err != nil {
 		fmt.Printf("OptimizeImage: failed to open image: %v", err)
 		return
 	}
 	resizedImg, width, height := resizeImage(img)
-	path = saveImageToFile(resizedImg, filePath)
-	return path, width, height
+	size = saveImageToFile(resizedImg, filePath)
+	return size, width, height
 }
 
 // resizeImage масштабирует изображение если необходимо.
@@ -186,39 +205,4 @@ func resizeImage(im image.Image) (dst image.Image, width int, height int) {
 	height = b.Dy()
 
 	return dst, width, height
-}
-
-// GenerateIcons - генерирует иконки заданного в filePath разных размеров,
-// сохраняет их рядом с файлом и возвращает JSON строку иконок.
-func GenerateIcons(filePath string) (string, error) {
-	img, err := imaging.Open(filePath)
-	if err != nil {
-		fmt.Printf("GenerateIcons: failed to open image: %v", err)
-		return "[]", err
-	}
-
-	thumbs := make([]Thumb, len(Params.ThumbsTemplate))
-	copy(thumbs, Params.ThumbsTemplate)
-
-	for i, thumb := range thumbs {
-		dst, width, height := thumbImage(img, thumb.Width, thumb.Height)
-		thumbFilePath := AppendToName(filePath, "--"+thumb.Type)
-		thumbFilePath = saveImageToFile(dst, thumbFilePath)
-
-		thumbs[i].Filepath = TrimLocaldir(thumbFilePath)
-		thumbs[i].Width = width
-		thumbs[i].Height = height
-	}
-
-	jsonBytes, err := json.Marshal(thumbs)
-	if err != nil {
-		return "", err
-	}
-
-	return string(jsonBytes), nil
-}
-
-// TrimLocaldir - удаляет префикс временной директории загрузки из пути файла
-func TrimLocaldir(path string) string {
-	return strings.TrimPrefix(path, Params.Localdir)
 }
