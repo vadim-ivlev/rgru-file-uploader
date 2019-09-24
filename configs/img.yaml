@@ -1,54 +1,33 @@
 dev:
   # куда загружаются файлы
-  localdir: uploads_temp
+  localdir: uploads
 
   # разрешенные расширения 
   valid_img_extensions:  {".jpeg": true, ".jpg": true, ".png": true, ".gif": true}
 
   # ширина до которой обрезаются слишком широкие изображения
   max_image_width: 1440
-
-  # При загрузке изображения на сервер генерируем следующие иконки
-  # thumbs_template:
-  # - type: small
-  #   width: 200
-  #   height: 134
-  #   path:
 
 
 docker:
   # куда загружаются файлы
-  localdir: uploads_temp
+  localdir: uploads
 
   # разрешенные расширения 
   valid_img_extensions:  {".jpeg": true, ".jpg": true, ".png": true, ".gif": true}
 
   # ширина до которой обрезаются слишком широкие изображения
   max_image_width: 1440
-
-  # При загрузке изображения на сервер генерируем следующие иконки
-  # thumbs_template:
-  # - type: small
-  #   width: 200
-  #   height: 134
-  #   path:
 
 
 prod:
   # куда загружаются файлы
-  localdir: uploads_temp
+  localdir: uploads
 
   # разрешенные расширения 
   valid_img_extensions:  {".jpeg": true, ".jpg": true, ".png": true, ".gif": true}
 
   # ширина до которой обрезаются слишком широкие изображения
   max_image_width: 1440
-
-  # При загрузке изображения на сервер генерируем следующие иконки
-  # thumbs_template:
-  # - type: small
-  #   width: 200
-  #   height: 134
-  #   path:
 
 

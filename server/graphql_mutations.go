@@ -29,7 +29,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				size, width, height := img.OptimizeIfImage(filePath)
 
 				return map[string]interface{}{
-					"filepath":     filePath,
+					"filepath":     img.TrimLocaldir(filePath),
 					"width":        width,
 					"height":       height,
 					"initial_size": initialSize,
@@ -79,7 +79,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				size, width, height := img.OptimizeIfImage(filePath)
 
 				return map[string]interface{}{
-					"filepath":     filePath,
+					"filepath":     img.TrimLocaldir(filePath),
 					"width":        width,
 					"height":       height,
 					"initial_size": initialSize,

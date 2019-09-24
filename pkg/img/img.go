@@ -206,3 +206,8 @@ func resizeImage(im image.Image) (dst image.Image, width int, height int) {
 
 	return dst, width, height
 }
+
+// TrimLocaldir - удаляет префикс временной директории загрузки из пути файла
+func TrimLocaldir(path string) string {
+	return strings.TrimPrefix(path, Params.Localdir)
+}

@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"rgru-file-uploader/pkg/img"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,7 @@ func defineRoutes(r *gin.Engine) {
 	r.Handle("OPTIONS", "/graphql", PingHandler)
 	r.Handle("POST", "/graphql", GraphQL)
 	r.Handle("POST", "/schema", GraphQL)
+	r.Static("/uploads", "./"+img.Params.Localdir)
 }
 
 // PingHandler нужен для фронта, так как сначала отправляется метод с OPTIONS
