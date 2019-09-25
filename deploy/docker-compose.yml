@@ -1,0 +1,13 @@
+version: '2.0'
+
+services:
+
+
+  # сервер, где запущено приложение
+  rgru-file-uploader-prod:
+    image: rgru-file-uploader-prod
+    container_name: rgru-file-uploader-prod
+    restart: always
+    ports:
+      - 5500:5500
+
