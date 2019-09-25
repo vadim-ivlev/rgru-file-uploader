@@ -10,7 +10,7 @@ import (
 var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Mutation",
 	Fields: graphql.Fields{
-		"upload_file": &graphql.Field{
+		"upload_local_file": &graphql.Field{
 			Type:        imageType,
 			Description: "Загрузить файл c локального компьютера",
 			Args: graphql.FieldConfigArgument{
@@ -38,7 +38,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 
 			},
 		},
-		"download_file": &graphql.Field{
+		"upload_internet_file": &graphql.Field{
 			Type:        imageType,
 			Description: "Загрузить файл из интернет",
 			Args: graphql.FieldConfigArgument{
