@@ -11,14 +11,14 @@
 
 Изображения ширина которых превышает 1440px (specified in img.yaml) пропорционально ужимаются до 1440px.
 
-## GraphQL API
+## GraphQL
 
 Конечные точки GraphQL 
 - `/schema` 
 - `/graphql`
 
 
-Методы для загрузки файлов:
+Методы загрузки файлов:
 - `upload_local_file (file_field_name)` для загрузки локальных файлов
 - `upload_internet_file (file_url)` для загрузки файлов из интернет
 
@@ -34,7 +34,7 @@
 
 ## REST
 
-Загруженные на сервер файлы доступны по URI 
+Загруженные файлы доступны по URI 
 `uploads + filepath`. Где `filepath` - то, что вернуло приложение.
 
 
@@ -46,7 +46,7 @@
 
     sh/build-frontend-container-all.sh
 
-### Деплой
+### Запуск деплоя на https://git.rgwork.ru
 
     sh/deploy.sh
 
