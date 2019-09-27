@@ -42,11 +42,12 @@
 
     go run main.go -serve 7700 -env=dev
 
-### Сборка контейнеров
+### Сборка контейнеров для фронтэнд разработчиков
 
-    sh/build-frontend-container-all.sh
+    sh/build-frontend-container.sh
 
 ### Запуск деплоя на https://git.rgwork.ru
 
+    sh/push.sh
     sh/deploy.sh
 

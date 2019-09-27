@@ -1,21 +1,15 @@
 #!/bin/bash
 
+echo 'building frontend container'
 
-# гасим бд
-# docker-compose down
+./build.sh
+cd deploy
 
-# удаляем файлы бд, и чистим загрузки
-sudo rm -rf uploads/* 
+echo building an image
 
+docker build -t vadimivlev/file-uploader:latest .
 
-# build a docker image 
-docker build -t rgru/rgru-file-uploader:latest -f Dockerfile-frontend . 
+echo pushing the image 
 
-# push the docker image 
 docker login
-docker push rgru/rgru-file-uploader:latest
-
-
-# копируем docker-compose-frontend.yml и 
-cp docker-compose-frontend.yml ../file-uploader/docker-compose.yml
-cp readme-frontend.md ../file-uploader/readme.md
+docker push vadimivlev/file-uploader:latest

@@ -14,6 +14,7 @@ func HeadersMiddleware() gin.HandlerFunc {
 		// if hostIsAllowed(c.Request.Host) {
 		// 	c.Header("Access-Control-Allow-Origin", "*")
 		// }
+
 		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, HEAD")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Accept, Access-Control-Allow-Headers, Authorization, X-Requested-With")
 		// c.Header("Content-Type", "application/json; charset=utf-8")

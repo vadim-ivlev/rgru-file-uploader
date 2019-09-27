@@ -43,8 +43,8 @@ build:
         - cp -r .  /go/src/$REPO_NAME
         - cd       /go/src/$REPO_NAME
 
-        # build app
-        - ./build.sh
+        # building deploy directory 
+        - ./build-deploy-directory.sh
 
         # collect files to deploy on prod
         - rm -rf   $BUILD_PATH/deploy
