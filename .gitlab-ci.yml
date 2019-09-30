@@ -44,7 +44,7 @@ build:
         - cd       /go/src/$REPO_NAME
 
         # building deploy directory 
-        - ./build-deploy-directory.sh
+        - sh/build-deploy-directory.sh
 
         # collect files to deploy on prod
         - rm -rf   $BUILD_PATH/deploy
