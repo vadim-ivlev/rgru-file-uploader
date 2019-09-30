@@ -22,3 +22,4 @@ echo "осторожно копируем файлы в ./deploy/configs/ "
 
 mkdir -p deploy/configs
 cp -f configs/img.yaml  deploy/configs/img.yaml
+cp -f configs/link-uploads-directory.sh  deploy/configs/link-uploads-directory.sh
