@@ -42,6 +42,8 @@ build:
         - mkdir -p /go/src/$REPO_NAME
         - cp -r .  /go/src/$REPO_NAME
         - cd       /go/src/$REPO_NAME
+        - pwd
+        - ls -lF --color
 
         # building deploy directory 
         - sh/build-deploy-directory.sh
@@ -79,14 +81,13 @@ deploy&copy:
         # deploy on server
         - ls -lF
         # remove old dir
-        # - ssh gitupdater@212.69.111.246 'rm -rf /home/gitupdater/'$IMAGE_NAME
+        - ssh gitupdater@212.69.111.246 'rm -rf /home/gitupdater/'$IMAGE_NAME
         # copy new dir on server
         - echo '**************************************************'
         - echo $IMAGE_NAME
         - echo $BUILD_PATH
-        - echo '$BUILD_PATH/deploy gitupdater@212.69.111.246:/home/gitupdater/$IMAGE_NAME'
         - echo $BUILD_PATH/deploy gitupdater@212.69.111.246:/home/gitupdater/$IMAGE_NAME
-        - echo 'Copying deploy to $IMAGE_NAME'
+        - echo 'Copying deploy to '$IMAGE_NAME
         - scp -pr $BUILD_PATH/deploy gitupdater@212.69.111.246:/home/gitupdater/$IMAGE_NAME
     only:
         - production
