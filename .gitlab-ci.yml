@@ -82,7 +82,7 @@ deploy&copy:
         - ls -lF
         # remove old dir
         # коммент потому что cannot remove '/home/gitupdater/rgru-file-uploader-prod/uploads/2019/10/01/37691/42.jpg': Permission denied
-        # - ssh gitupdater@212.69.111.246 'rm -rf /home/gitupdater/'$IMAGE_NAME
+        - ssh gitupdater@212.69.111.246 'rm -rf /home/gitupdater/'$IMAGE_NAME
         # copy new dir on server
         - echo '**************************************************'
         - echo $IMAGE_NAME
