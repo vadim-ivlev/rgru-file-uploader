@@ -10,7 +10,7 @@ import (
 func HeadersMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		c.Header("Access-Control-Allow-Origin", "*")
+		// c.Header("Access-Control-Allow-Origin", "*")
 		// if hostIsAllowed(c.Request.Host) {
 		// 	c.Header("Access-Control-Allow-Origin", "*")
 		// }
