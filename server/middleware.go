@@ -21,6 +21,11 @@ func HeadersMiddleware() gin.HandlerFunc {
 			c.Header("Access-Control-Allow-Origin", origin)
 		}
 
+		// Если конечное приложение  не установило Access-Control-Allow-Credentials добавляем его
+		if c.GetHeader("Access-Control-Allow-Credentials") == "" {
+			c.Header("Access-Control-Allow-Credentials", "true")
+		}
+
 		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, HEAD")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Accept, Access-Control-Allow-Headers, Authorization, X-Requested-With")
 		// c.Header("Content-Type", "application/json; charset=utf-8")
