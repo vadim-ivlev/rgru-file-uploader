@@ -11,6 +11,6 @@ sudo rm -rf uploads/*
 # sleep 1
 
 # запускаем приложение
-go run main.go -serve 7700 -env=dev
+go run main.go -serve 5500 -env=dev
 
 

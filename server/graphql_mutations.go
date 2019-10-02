@@ -2,6 +2,8 @@ package server
 
 import (
 	"errors"
+	"log"
+	"os"
 	"rgru-file-uploader/pkg/img"
 
 	"github.com/graphql-go/graphql"
@@ -27,6 +29,12 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				}
 				// Оптимизируем его если это изображение
 				size, width, height := img.OptimizeIfImage(filePath)
+
+				// Уровень доступа, для возможности удаления файла.
+				err = os.Chmod(filePath, 0777)
+				if err != nil {
+					log.Println(err)
+				}
 
 				return map[string]interface{}{
 					"filepath":     img.TrimLocaldir(filePath),
@@ -77,6 +85,12 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				}
 				// Оптимизируем его если это изображение
 				size, width, height := img.OptimizeIfImage(filePath)
+
+				// Уровень доступа, для возможности удаления файла.
+				err = os.Chmod(filePath, 0777)
+				if err != nil {
+					log.Println(err)
+				}
 
 				return map[string]interface{}{
 					"filepath":     img.TrimLocaldir(filePath),

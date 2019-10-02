@@ -83,8 +83,8 @@ func UlidNum(min, max int) string {
 // CreateNewDirectory создаем директорию для хранения файлов
 func CreateNewDirectory() (path string, err error) {
 	saveDir := Params.Localdir + "/" + time.Now().Format("2006/01/02") + "/" + UlidNum(10000, 99999) + "/"
-	err = os.MkdirAll(saveDir, os.ModePerm)
-	return saveDir, nil
+	err = os.MkdirAll(saveDir, 0777)
+	return saveDir, err
 }
 
 // SaveFirstFile - сохраняет первый загруженный файл поля fileFieldName во временную директорию

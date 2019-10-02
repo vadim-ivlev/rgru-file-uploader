@@ -11,5 +11,5 @@ services:
     ports:
       - 5500:5500
     volumes: 
-      - ./uploads:/app/uploads
+      - ./../uploaded-files:/app/uploads
 

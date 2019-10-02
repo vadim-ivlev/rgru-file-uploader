@@ -40,14 +40,27 @@
 
 ### Запуск для разработчика
 
-    go run main.go -serve 7700 -env=dev
+    go run main.go -serve 5500 -env=dev
 
 ### Сборка контейнеров для фронтэнд разработчиков
 
     sh/build-frontend-container.sh
 
-### Запуск деплоя на https://git.rgwork.ru
+### Пуш и запуск деплоя на https://git.rgwork.ru
 
     sh/push.sh
     sh/deploy.sh
+
+### Полное обновление программы
+
+полное обновление программы состоит из следующих этапов
+
+1. Сборка контейнеров для фронтэнда
+2. Выгрузка изменений в репозиторий
+3. Запуск пайплайна на деплой https://git.rgwork.ru
+
+        sh/build-frontend-container.sh
+        sh/push.sh
+        sh/deploy.sh
+
 
