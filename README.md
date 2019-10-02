@@ -59,6 +59,9 @@
 2. Выгрузка изменений в репозиторий
 3. Запуск пайплайна на деплой https://git.rgwork.ru
 
+        git add git add -A .
+        git commit -m "fix: description"
+
         sh/build-frontend-container.sh
         sh/push.sh
         sh/deploy.sh
