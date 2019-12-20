@@ -2,10 +2,13 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"rgru-file-uploader/pkg/img"
+	"rgru-file-uploader/pkg/signature"
 
+	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql"
 )
 
@@ -22,6 +25,12 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				// Проверяем подпись
+				err := checkSignature(params)
+				if err != nil {
+					return nil, fmt.Errorf("Signature check failed. %v", err)
+				}
+
 				// сохраняем файл загруженный с компьютера пользователя
 				filePath, initialSize, err := img.SaveFirstFormFile(params, "file_field_name")
 				if err != nil {
@@ -60,6 +69,12 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				// Проверяем подпись
+				err := checkSignature(params)
+				if err != nil {
+					return nil, fmt.Errorf("Signature check failed. %v", err)
+				}
+
 				// Создаем директорию для хранения файла
 				dirName, err := img.CreateNewDirectory()
 				if err != nil {
@@ -104,3 +119,15 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 		},
 	},
 })
+
+func checkSignature(params graphql.ResolveParams) error {
+	// Проверяем подпись
+	if signature.PublicKeyText == "" {
+		return nil
+	}
+	c, ok := params.Context.Value("ginContext").(*gin.Context)
+	if !ok {
+		return errors.New("SaveFirstFormFile(): Cannot get gin context.")
+	}
+	return signature.Verify(c.Request)
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"rgru-file-uploader/pkg/img"
+	"rgru-file-uploader/pkg/signature"
 	"rgru-file-uploader/server"
 	"strconv"
 )
@@ -14,6 +15,8 @@ func main() {
 	servePort, env := readCommandLineParams()
 	// считать конфиг файлы
 	img.ReadConfig("./configs/img.yaml", env)
+	// читаем конфиг signature
+	signature.ReadConfig("./configs/signature.yaml", env)
 
 	// если порт > 0, печатаем приветствие и запускаем сервер
 	if servePort > 0 {

@@ -14,6 +14,7 @@ rgru-file-uploader
 deploy/rgru-file-uploader
 deploy/configs
 deploy/configs_example
+deploy/cerificates
 deploy/migrations
 deploy/templates
 deploy/testapps
