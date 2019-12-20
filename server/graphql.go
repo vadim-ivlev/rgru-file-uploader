@@ -1,9 +1,12 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -69,4 +72,30 @@ func GraphQL(c *gin.Context) {
 	})
 
 	c.JSON(200, result)
+}
+
+func printRequestHeaders(r *http.Request) {
+	fmt.Println("--------------HTTP HEADERS------------------------")
+	for name, value := range r.Header {
+		fmt.Println(name, ":", value[0])
+	}
+	fmt.Println("--------------END HTTP HEADERS--------------------")
+}
+
+// https://stackoverflow.com/questions/43021058/golang-read-request-body
+// https://stackoverflow.com/questions/29746123/convert-byte-slice-to-io-reader
+
+func printRequestBody(req *http.Request) *http.Request {
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return req
+	}
+	s := string(body)
+	defer req.Body.Close() //FIXME: where to put it ??????
+	fmt.Println("--------------HTTP BODY------------------------")
+	fmt.Println(s[0:200])
+	fmt.Println("--------------END HTTP BODY--------------------")
+	// And now set a new body, which will simulate the same data we read:
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	return req
 }
