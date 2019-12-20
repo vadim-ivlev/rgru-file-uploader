@@ -7,6 +7,7 @@ import (
 	"os"
 	"rgru-file-uploader/pkg/img"
 	"rgru-file-uploader/pkg/signature"
+	"rgru-file-uploader/pkg/vutils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql"
@@ -129,6 +130,6 @@ func checkSignature(params graphql.ResolveParams) error {
 	if !ok {
 		return errors.New("SaveFirstFormFile(): Cannot get gin context.")
 	}
-	printRequestHeaders(c.Request)
+	vutils.PrintRequestHeaders(c.Request)
 	return signature.Verify(c.Request)
 }
