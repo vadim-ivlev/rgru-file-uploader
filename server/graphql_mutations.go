@@ -131,8 +131,10 @@ func checkSignature(params graphql.ResolveParams) error {
 	if !ok {
 		return errors.New("SaveFirstFormFile(): Cannot get gin context.")
 	}
-	vutils.PrintRequestHeaders(c.Request)
-
 	// Проверяем подпись
-	return signature.Verify(c.Request)
+	err := signature.Verify(c.Request)
+	if err != nil {
+		vutils.PrintRequestHeaders(c.Request)
+	}
+	return err
 }
