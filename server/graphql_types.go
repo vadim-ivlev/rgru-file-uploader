@@ -8,27 +8,27 @@ import (
 
 var imageType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "File",
-	Description: "Файл. width и height поля имеют смысл только для файлов изображений",
+	Description: "File.",
 	Fields: graphql.Fields{
 		"filepath": &graphql.Field{
 			Type:        graphql.String,
-			Description: "URI изображения",
+			Description: "File URI",
 		},
 		"width": &graphql.Field{
 			Type:        graphql.Int,
-			Description: "Ширина в пикселях",
+			Description: "Width in pixels (for images)",
 		},
 		"height": &graphql.Field{
 			Type:        graphql.Int,
-			Description: "Высота в пикселях",
+			Description: "Height in pixels (for images)",
 		},
 		"size": &graphql.Field{
 			Type:        graphql.Int,
-			Description: "Размер оптимизированного файла в байтах",
+			Description: "Size of the optimized image in bytes",
 		},
 		"initial_size": &graphql.Field{
 			Type:        graphql.Int,
-			Description: "Размер файла в байтах",
+			Description: "Initial file size in bytes",
 		},
 	},
 })

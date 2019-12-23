@@ -18,11 +18,11 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"upload_local_file": &graphql.Field{
 			Type:        imageType,
-			Description: "Загрузить файл c локального компьютера",
+			Description: "Upload a local file",
 			Args: graphql.FieldConfigArgument{
 				"file_field_name": &graphql.ArgumentConfig{
 					Type:        graphql.NewNonNull(graphql.String),
-					Description: "Имя (name) поля формы для загрузки файла. Пример: <input name='fname' type='file' ...>",
+					Description: "Input name for uploading files. Пример: <input name='fname' type='file' ...>",
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
@@ -58,15 +58,15 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"upload_internet_file": &graphql.Field{
 			Type:        imageType,
-			Description: "Загрузить файл из интернет",
+			Description: "Upload file from Internet",
 			Args: graphql.FieldConfigArgument{
 				"file_name": &graphql.ArgumentConfig{
 					Type:        graphql.NewNonNull(graphql.String),
-					Description: "Имя под которым нужно сохранить файл.",
+					Description: "File name for the uploaded file",
 				},
 				"file_url": &graphql.ArgumentConfig{
 					Type:        graphql.NewNonNull(graphql.String),
-					Description: "URL откуда загрузить файл.",
+					Description: "URL of the file",
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
@@ -121,8 +121,9 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// Проверяем подпись
 func checkSignature(params graphql.ResolveParams) error {
-	// Проверяем подпись
+	// Если ключ не предоставлен, значит проверять подпись не нужно
 	if signature.PublicKeyText == "" {
 		return nil
 	}
@@ -131,5 +132,7 @@ func checkSignature(params graphql.ResolveParams) error {
 		return errors.New("SaveFirstFormFile(): Cannot get gin context.")
 	}
 	vutils.PrintRequestHeaders(c.Request)
+
+	// Проверяем подпись
 	return signature.Verify(c.Request)
 }

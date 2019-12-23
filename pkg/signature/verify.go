@@ -18,7 +18,7 @@ var PublicKeyText string
 // в спецификации RFC    <https://tools.ietf.org/html/draft-cavage-http-signatures-06>.
 // Цифровая подпись это HTTP заголовок вида:
 // Authorization: Signature keyId="auth-proxy",algorithm="rsa-sha256",headers="(request-target) host date",signature="ZKNCbJ67zB..."
-// Возвращает ошибку.
+// Возвращает ошибку в случае неудачи.
 func Verify(req *http.Request) error {
 	if verifier == nil {
 		return errors.New("No verifier")
@@ -41,8 +41,10 @@ func loadPublicKeyFromFile() {
 
 // helpers --------------------------------------------------------
 
-func loadPublicKey(path string) (interface{}, error) {
-	bytes, err := ioutil.ReadFile(path)
+// loadPublicKey loads public RSA key from the specified file.
+// Returns parsed public key.
+func loadPublicKey(filePath string) (interface{}, error) {
+	bytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +52,8 @@ func loadPublicKey(path string) (interface{}, error) {
 	return parsePublicKey(bytes)
 }
 
+// parsePublicKey parses public RSA key represented by the slice of bytes.
+// Returns parsed public key.
 func parsePublicKey(pemBytes []byte) (interface{}, error) {
 	block, _ := pem.Decode(pemBytes)
 	if block == nil {

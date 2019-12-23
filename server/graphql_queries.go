@@ -11,7 +11,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"ping": &graphql.Field{
 			Type:        graphql.String,
-			Description: "Тестовый метод",
+			Description: "quick test",
 			Args:        graphql.FieldConfigArgument{},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				return "pong", nil
