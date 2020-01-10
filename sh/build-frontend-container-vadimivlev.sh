@@ -7,9 +7,9 @@ cd deploy
 
 echo 'building an image'
 
-docker build -t rgru/file-uploader:latest . || exit 2
+docker build -t vadimivlev/file-uploader:latest . || exit 2
 
 echo 'pushing the image hub.docker.com' 
 
 docker login
-docker push rgru/file-uploader:latest
+docker push vadimivlev/file-uploader:latest

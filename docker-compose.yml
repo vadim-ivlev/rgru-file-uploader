@@ -5,7 +5,7 @@ services:
 
   # сервер, где запущено приложение
   rgru-file-uploader-prod:
-    image: vadimivlev/file-uploader:latest
+    image: rgru/file-uploader:latest
     container_name: file-uploader
     restart: always
     ports:
