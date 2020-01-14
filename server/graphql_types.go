@@ -56,8 +56,8 @@ var imageType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var rectType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "Rect",
+var cropRectType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "CropRect",
 	Description: "Rectangular area on the image",
 	Fields: graphql.Fields{
 		"x": &graphql.Field{
