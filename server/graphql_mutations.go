@@ -2,8 +2,8 @@ package server
 
 import (
 	"errors"
-	"image"
 	"fmt"
+	"image"
 	"log"
 	"os"
 	"path/filepath"
@@ -133,7 +133,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 					Description: "File name for the uploaded file",
 				},
 				"crop_rect": &graphql.ArgumentConfig{
-					Type:        graphql.NewNonNull(cropRectType),
+					Type:        graphql.NewNonNull(inputCropRectObject),
 					Description: "Rectangular area of the image",
 				},
 			},
@@ -152,12 +152,17 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 
 				filePath := img.Params.Localdir + "/" + params.Args["file_path"].(string)
 				fileName := filepath.Base(filePath)
-				croppedFilePath := dirName + fileName
-				cropRect := params.Args["crop_rect"].(Rect)
 				initialSize := getFileSize(filePath)
+				croppedFilePath := dirName + fileName
+
+				cropRect, _ := params.Args["crop_rect"].(map[string]interface{})
+				x, _ := cropRect["x"].(int)
+				y, _ := cropRect["y"].(int)
+				width, _ := cropRect["width"].(int)
+				height, _ := cropRect["height"].(int)
 
 				// Обрезаем  изображение
-				size := img.CropImage(filePath, image.Rect(cropRect.x, cropRect.y, cropRect.x + cropRect.width, cropRect.y+cropRect.height), croppedFilePath)
+				size := img.CropImage(filePath, image.Rect(x, y, x+width, y+height), croppedFilePath)
 
 				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(croppedFilePath, 0777)
@@ -168,8 +173,8 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return map[string]interface{}{
 					"filepath":       img.TrimLocaldir(croppedFilePath),
 					"ext":            filepath.Ext(croppedFilePath),
-					"width":          cropRect.width,
-					"height":         cropRect.height,
+					"width":          width,
+					"height":         height,
 					"initial_size":   initialSize,
 					"size":           size,
 					"dominant_color": img.GetDominantColor(croppedFilePath),

@@ -56,32 +56,25 @@ var imageType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var cropRectType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "CropRect",
+var inputCropRectObject = graphql.NewInputObject(graphql.InputObjectConfig{
+	Name:        "InputRect",
 	Description: "Rectangular area on the image",
-	Fields: graphql.Fields{
-		"x": &graphql.Field{
+	Fields: graphql.InputObjectConfigFieldMap{
+		"x": &graphql.InputObjectFieldConfig{
 			Type:        graphql.Int,
 			Description: "distance between LEFT sides of the image and the crop rectangle in pixels",
 		},
-		"y": &graphql.Field{
+		"y": &graphql.InputObjectFieldConfig{
 			Type:        graphql.Int,
 			Description: "distance between TOP sides of the image and the crop rectangle in pixels",
 		},
-		"width": &graphql.Field{
+		"width": &graphql.InputObjectFieldConfig{
 			Type:        graphql.Int,
 			Description: "width of the rectangle in pixels",
 		},
-		"height": &graphql.Field{
+		"height": &graphql.InputObjectFieldConfig{
 			Type:        graphql.Int,
 			Description: "height of the rectangle in pixels",
 		},
 	},
 })
-
-type Rect struct {
-	x      int
-	y      int
-	width  int
-	height int
-}
