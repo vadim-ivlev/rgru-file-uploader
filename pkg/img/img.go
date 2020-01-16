@@ -2,6 +2,7 @@
 package img
 
 import (
+	// "bytes"
 	"errors"
 	"fmt"
 	"image"
@@ -17,9 +18,11 @@ import (
 
 	"strings"
 
+	"github.com/EdlinOrg/prominentcolor"
 	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql"
+	colors "gopkg.in/go-playground/colors.v1"
 	"gopkg.in/yaml.v2"
 )
 
@@ -210,4 +213,39 @@ func resizeImage(im image.Image) (dst image.Image, width int, height int) {
 // TrimLocaldir - удаляет префикс временной директории загрузки из пути файла
 func TrimLocaldir(path string) string {
 	return strings.TrimPrefix(path, Params.Localdir)
+}
+
+// GetDominantColor returns dominant color of the image along with brightness flag.
+// { hex : "FFFFFF", is_light: true}
+// See: https://github.com/EdlinOrg/prominentcolor
+func GetDominantColor(filePath string) map[string]interface{} {
+	// Если это не изображение возвращаем nil
+	if !Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
+		return nil
+	}
+	// Если не смогли открыть файл возвращаем nil
+	img, err := imaging.Open(filePath)
+	if err != nil {
+		log.Printf("GetDominantColorIfImage: failed to open image: %v", err)
+		return nil
+	}
+
+	imageColors, err := prominentcolor.KmeansWithArgs(prominentcolor.ArgumentNoCropping, img)
+	if err != nil {
+		return nil
+	}
+	dominantColorHexString := imageColors[0].AsString()
+	color, err := colors.Parse("#" + dominantColorHexString)
+	if err != nil {
+		return nil
+	}
+
+	return map[string]interface{}{
+		"hex":      dominantColorHexString,
+		"is_light": color.IsLight(),
+	}
+}
+
+func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string) int64 {
+	return 777
 }

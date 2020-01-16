@@ -2,9 +2,11 @@ package server
 
 import (
 	"errors"
+	"image"
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"rgru-file-uploader/pkg/img"
 	"rgru-file-uploader/pkg/signature"
 	"rgru-file-uploader/pkg/vutils"
@@ -40,22 +42,24 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				// Оптимизируем его если это изображение
 				size, width, height := img.OptimizeIfImage(filePath)
 
-				// Уровень доступа, для возможности удаления файла.
+				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(filePath, 0777)
 				if err != nil {
 					log.Println(err)
 				}
 
 				return map[string]interface{}{
-					"filepath":     img.TrimLocaldir(filePath),
-					"width":        width,
-					"height":       height,
-					"initial_size": initialSize,
-					"size":         size,
+					"filepath":       img.TrimLocaldir(filePath),
+					"ext":            filepath.Ext(filePath),
+					"width":          width,
+					"height":         height,
+					"initial_size":   initialSize,
+					"size":           size,
+					"dominant_color": img.GetDominantColor(filePath),
 				}, nil
-
 			},
 		},
+
 		"upload_internet_file": &graphql.Field{
 			Type:        imageType,
 			Description: "Upload file from Internet",
@@ -102,24 +106,87 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				// Оптимизируем его если это изображение
 				size, width, height := img.OptimizeIfImage(filePath)
 
-				// Уровень доступа, для возможности удаления файла.
+				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(filePath, 0777)
 				if err != nil {
 					log.Println(err)
 				}
 
 				return map[string]interface{}{
-					"filepath":     img.TrimLocaldir(filePath),
-					"width":        width,
-					"height":       height,
-					"initial_size": initialSize,
-					"size":         size,
+					"filepath":       img.TrimLocaldir(filePath),
+					"ext":            filepath.Ext(filePath),
+					"width":          width,
+					"height":         height,
+					"initial_size":   initialSize,
+					"size":           size,
+					"dominant_color": img.GetDominantColor(filePath),
 				}, nil
+			},
+		},
 
+		"crop_image": &graphql.Field{
+			Type:        imageType,
+			Description: "Crop image file",
+			Args: graphql.FieldConfigArgument{
+				"file_path": &graphql.ArgumentConfig{
+					Type:        graphql.NewNonNull(graphql.String),
+					Description: "File name for the uploaded file",
+				},
+				"crop_rect": &graphql.ArgumentConfig{
+					Type:        graphql.NewNonNull(cropRectType),
+					Description: "Rectangular area of the image",
+				},
+			},
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				// Проверяем подпись
+				err := checkSignature(params)
+				if err != nil {
+					return nil, fmt.Errorf("Signature check failed. %v", err)
+				}
+
+				// Создаем директорию для хранения файла
+				dirName, err := img.CreateNewDirectory()
+				if err != nil {
+					return nil, err
+				}
+
+				filePath := img.Params.Localdir + "/" + params.Args["file_path"].(string)
+				fileName := filepath.Base(filePath)
+				croppedFilePath := dirName + fileName
+				cropRect := params.Args["crop_rect"].(Rect)
+				initialSize := getFileSize(filePath)
+
+				// Обрезаем  изображение
+				size := img.CropImage(filePath, image.Rect(cropRect.x, cropRect.y, cropRect.x + cropRect.width, cropRect.y+cropRect.height), croppedFilePath)
+
+				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
+				err = os.Chmod(croppedFilePath, 0777)
+				if err != nil {
+					log.Println(err)
+				}
+
+				return map[string]interface{}{
+					"filepath":       img.TrimLocaldir(croppedFilePath),
+					"ext":            filepath.Ext(croppedFilePath),
+					"width":          cropRect.width,
+					"height":         cropRect.height,
+					"initial_size":   initialSize,
+					"size":           size,
+					"dominant_color": img.GetDominantColor(croppedFilePath),
+				}, nil
 			},
 		},
 	},
 })
+
+func getFileSize(filePath string) int64 {
+	fi, err := os.Stat(filePath)
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	return fi.Size()
+}
 
 // Проверяем подпись
 func checkSignature(params graphql.ResolveParams) error {

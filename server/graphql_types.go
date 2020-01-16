@@ -78,3 +78,10 @@ var cropRectType = graphql.NewObject(graphql.ObjectConfig{
 		},
 	},
 })
+
+type Rect struct {
+	x      int
+	y      int
+	width  int
+	height int
+}
