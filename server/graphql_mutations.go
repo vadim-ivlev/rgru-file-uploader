@@ -19,7 +19,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Mutation",
 	Fields: graphql.Fields{
 		"upload_local_file": &graphql.Field{
-			Type:        imageType,
+			Type:        imageObject,
 			Description: "Upload a local file",
 			Args: graphql.FieldConfigArgument{
 				"file_field_name": &graphql.ArgumentConfig{
@@ -61,7 +61,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"upload_internet_file": &graphql.Field{
-			Type:        imageType,
+			Type:        imageObject,
 			Description: "Upload file from Internet",
 			Args: graphql.FieldConfigArgument{
 				"file_name": &graphql.ArgumentConfig{
@@ -125,7 +125,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 		},
 
 		"crop_image": &graphql.Field{
-			Type:        imageType,
+			Type:        imageObject,
 			Description: "Crop image file",
 			Args: graphql.FieldConfigArgument{
 				"file_path": &graphql.ArgumentConfig{
@@ -155,6 +155,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				initialSize := getFileSize(filePath)
 				croppedFilePath := dirName + fileName
 
+				// "_" - Молча обнуляем параметры недовведённые пользователем
 				cropRect, _ := params.Args["crop_rect"].(map[string]interface{})
 				x, _ := cropRect["x"].(int)
 				y, _ := cropRect["y"].(int)
@@ -162,7 +163,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				height, _ := cropRect["height"].(int)
 
 				// Обрезаем  изображение
-				size := img.CropImage(filePath, image.Rect(x, y, x+width, y+height), croppedFilePath)
+				croppedWidth, croppedHeight, croppedSize := img.CropImage(filePath, image.Rect(x, y, x+width, y+height), croppedFilePath)
 
 				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(croppedFilePath, 0777)
@@ -173,10 +174,10 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return map[string]interface{}{
 					"filepath":       img.TrimLocaldir(croppedFilePath),
 					"ext":            filepath.Ext(croppedFilePath),
-					"width":          width,
-					"height":         height,
+					"width":          croppedWidth,
+					"height":         croppedHeight,
 					"initial_size":   initialSize,
-					"size":           size,
+					"size":           croppedSize,
 					"dominant_color": img.GetDominantColor(croppedFilePath),
 				}, nil
 			},

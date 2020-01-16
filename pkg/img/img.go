@@ -60,7 +60,7 @@ func AppendToName(fileName string, str string) string {
 }
 
 // saveImageToFile - Сохраняет файл.
-// Возвращает путь к сохраненному файлу.
+// Возвращает размер файла в байтах.
 func saveImageToFile(dst image.Image, filePath string) int64 {
 	err := imaging.Save(dst, filePath)
 	if err != nil {
@@ -246,6 +246,69 @@ func GetDominantColor(filePath string) map[string]interface{} {
 	}
 }
 
-func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string) int64 {
-	return 777
+// CropImage  Обрезает изображение filePath по размерам cropRect,
+// и сохраняет его в croppedFilePath.
+// Возвращает ширину, высоту в пикселях и размер в байтах.
+func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string) (width, height int, size int64) {
+
+	// Если это не изображение возвращаем 0
+	if !Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
+		return
+	}
+	// Если не смогли открыть файл возвращаем 0
+	img, err := imaging.Open(filePath)
+	if err != nil {
+		log.Printf("GetDominantColorIfImage: failed to open image: %v", err)
+		return
+	}
+
+	croppedImage := imaging.Crop(img, cropRect)
+
+	width = croppedImage.Rect.Dx()
+	height = croppedImage.Rect.Dy()
+	size = saveImageToFile(croppedImage, croppedFilePath)
+
+	return
+}
+
+// getImageWidthHeightSize Возвращает ширину, высоту в пикселях изображения и размер в байтах.
+func GetImageWidthHeight(filePath string) (width, height int16) {
+	// Если это не изображение возвращаем 0
+	if !Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
+		return
+	}
+	// Если не смогли открыть файл возвращаем 0
+	// img, err := imaging.Open(filePath)
+	// if err != nil {
+	// 	log.Printf("GetDominantColorIfImage: failed to open image: %v", err)
+	// 	return
+	// }
+
+	// width = img.
+	// height = img.Bounds().Dy()
+	return
+
+	// // https://stackoverflow.com/questions/21741431/get-image-size-with-golang ------------------------------------
+	// if reader, err := os.Open(filepath.Join(dir_to_scan, imgFile.Name())); err == nil {
+	// 	defer reader.Close()
+	// 	im, _, err := image.DecodeConfig(reader)
+	// 	if err != nil {
+	// 		fmt.Fprintf(os.Stderr, "%s: %v\n", imgFile.Name(), err)
+	// 		continue
+	// 	}
+	// 	fmt.Printf("%s %d %d\n", imgFile.Name(), im.Width, im.Height)
+	// } else {
+	// 	fmt.Println("Impossible to open the file:", err)
+	// }
+
+}
+
+// GetFileSize Возвращает размер файла в байтах.
+func GetFileSize(filePath string) int64 {
+	fi, err := os.Stat(filePath)
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	return fi.Size()
 }

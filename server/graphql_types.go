@@ -4,9 +4,9 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-// TYPES ****************************************************
+// GraphQL OUTPUT types ****************************************************
 
-var dominantColorType = graphql.NewObject(graphql.ObjectConfig{
+var dominantColorObject = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "DominantColor",
 	Description: "Dominant color in the image",
 	Fields: graphql.Fields{
@@ -21,7 +21,7 @@ var dominantColorType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var imageType = graphql.NewObject(graphql.ObjectConfig{
+var imageObject = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "File",
 	Description: "File.",
 	Fields: graphql.Fields{
@@ -50,11 +50,13 @@ var imageType = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Initial file size in bytes",
 		},
 		"dominant_color": &graphql.Field{
-			Type:        dominantColorType,
+			Type:        dominantColorObject,
 			Description: "Dominant color in the image",
 		},
 	},
 })
+
+// GraphQL INPUT types ****************************************************
 
 var inputCropRectObject = graphql.NewInputObject(graphql.InputObjectConfig{
 	Name:        "InputRect",
