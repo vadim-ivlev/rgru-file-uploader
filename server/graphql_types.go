@@ -22,8 +22,8 @@ var dominantColorObject = graphql.NewObject(graphql.ObjectConfig{
 })
 
 var imageObject = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "File",
-	Description: "File.",
+	Name:        "ImageFile",
+	Description: "Can be a file of any type. Not only image.",
 	Fields: graphql.Fields{
 		"filepath": &graphql.Field{
 			Type:        graphql.String,
@@ -32,6 +32,18 @@ var imageObject = graphql.NewObject(graphql.ObjectConfig{
 		"ext": &graphql.Field{
 			Type:        graphql.String,
 			Description: "Filename extension",
+		},
+		"initial_width": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "Width in pixels of the original image (for images)",
+		},
+		"initial_height": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "Height in pixels of the original image (for images)",
+		},
+		"initial_size": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "Initial file size in bytes",
 		},
 		"width": &graphql.Field{
 			Type:        graphql.Int,
@@ -45,13 +57,9 @@ var imageObject = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.Int,
 			Description: "Size of the optimized image in bytes",
 		},
-		"initial_size": &graphql.Field{
-			Type:        graphql.Int,
-			Description: "Initial file size in bytes",
-		},
 		"dominant_color": &graphql.Field{
 			Type:        dominantColorObject,
-			Description: "Dominant color in the image",
+			Description: "Dominant color of the image",
 		},
 	},
 })

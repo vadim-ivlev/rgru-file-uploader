@@ -171,26 +171,31 @@ func DownloadFile(filepath string, url string) (size int64, err error) {
 }
 
 // OptimizeIfImage Оптимизирует изображение с разрешенными расширениями
-func OptimizeIfImage(filePath string) (size int64, width int, height int) {
-	// Если это изображение оптимизируем его
-	if Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
-		size, width, height = OptimizeImage(filePath)
-		return size, width, height
+func OptimizeIfImage(filePath string) (width, height int, size int64, initialWidth, initialHeight int) {
+	// Изображение ли это?
+	if !Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
+		return
 	}
-	return 0, 0, 0
+	width, height, size, initialWidth, initialHeight = OptimizeImage(filePath)
+	return
 }
 
 // OptimizeImage - уменьшает изображение если нужно,
 // Возвращает путь к оптимизированному изображению, его ширину и высоту
-func OptimizeImage(filePath string) (size int64, width int, height int) {
+func OptimizeImage(filePath string) (width, height int, size int64, initialWidth, initialHeight int) {
 	img, err := imaging.Open(filePath)
 	if err != nil {
 		fmt.Printf("OptimizeImage: failed to open image: %v", err)
 		return
 	}
+
+	imgBounds := img.Bounds()
+	initialWidth = imgBounds.Dx()
+	initialHeight = imgBounds.Dy()
+
 	resizedImg, width, height := resizeImage(img)
 	size = saveImageToFile(resizedImg, filePath)
-	return size, width, height
+	return
 }
 
 // resizeImage масштабирует изображение если необходимо.
@@ -249,7 +254,7 @@ func GetDominantColor(filePath string) map[string]interface{} {
 // CropImage  Обрезает изображение filePath по размерам cropRect,
 // и сохраняет его в croppedFilePath.
 // Возвращает ширину, высоту в пикселях и размер в байтах.
-func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string) (width, height int, size int64) {
+func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string) (width, height int, size int64, initialWidth, initialHeight int) {
 
 	// Если это не изображение возвращаем 0
 	if !Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
@@ -261,6 +266,9 @@ func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string
 		log.Printf("GetDominantColorIfImage: failed to open image: %v", err)
 		return
 	}
+	imgBounds := img.Bounds()
+	initialWidth = imgBounds.Dx()
+	initialHeight = imgBounds.Dy()
 
 	croppedImage := imaging.Crop(img, cropRect)
 
@@ -272,34 +280,29 @@ func CropImage(filePath string, cropRect image.Rectangle, croppedFilePath string
 }
 
 // getImageWidthHeightSize Возвращает ширину, высоту в пикселях изображения и размер в байтах.
-func GetImageWidthHeight(filePath string) (width, height int16) {
+func GetImageWidthHeight(filePath string) (width, height int) {
 	// Если это не изображение возвращаем 0
 	if !Params.ValidImgExtensions[strings.ToLower(filepath.Ext(filePath))] {
 		return
 	}
-	// Если не смогли открыть файл возвращаем 0
-	// img, err := imaging.Open(filePath)
-	// if err != nil {
-	// 	log.Printf("GetDominantColorIfImage: failed to open image: %v", err)
-	// 	return
-	// }
 
-	// width = img.
-	// height = img.Bounds().Dy()
+	// https://stackoverflow.com/questions/21741431/get-image-size-with-golang ------------------------------------
+	reader, err := os.Open(filePath)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	defer reader.Close()
+	im, _, err := image.DecodeConfig(reader)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	width = im.Width
+	height = im.Height
 	return
-
-	// // https://stackoverflow.com/questions/21741431/get-image-size-with-golang ------------------------------------
-	// if reader, err := os.Open(filepath.Join(dir_to_scan, imgFile.Name())); err == nil {
-	// 	defer reader.Close()
-	// 	im, _, err := image.DecodeConfig(reader)
-	// 	if err != nil {
-	// 		fmt.Fprintf(os.Stderr, "%s: %v\n", imgFile.Name(), err)
-	// 		continue
-	// 	}
-	// 	fmt.Printf("%s %d %d\n", imgFile.Name(), im.Width, im.Height)
-	// } else {
-	// 	fmt.Println("Impossible to open the file:", err)
-	// }
 
 }
 

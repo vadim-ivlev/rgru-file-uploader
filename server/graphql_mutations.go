@@ -40,7 +40,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 					return nil, err
 				}
 				// Оптимизируем его если это изображение
-				size, width, height := img.OptimizeIfImage(filePath)
+				width, height, size, initialWidth, initialHeight := img.OptimizeIfImage(filePath)
 
 				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(filePath, 0777)
@@ -51,9 +51,11 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return map[string]interface{}{
 					"filepath":       img.TrimLocaldir(filePath),
 					"ext":            filepath.Ext(filePath),
+					"initial_width":  initialWidth,
+					"initial_height": initialHeight,
+					"initial_size":   initialSize,
 					"width":          width,
 					"height":         height,
-					"initial_size":   initialSize,
 					"size":           size,
 					"dominant_color": img.GetDominantColor(filePath),
 				}, nil
@@ -104,7 +106,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 					return nil, err
 				}
 				// Оптимизируем его если это изображение
-				size, width, height := img.OptimizeIfImage(filePath)
+				width, height, size, initialWidth, initialHeight := img.OptimizeIfImage(filePath)
 
 				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(filePath, 0777)
@@ -115,9 +117,11 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return map[string]interface{}{
 					"filepath":       img.TrimLocaldir(filePath),
 					"ext":            filepath.Ext(filePath),
+					"initial_width":  initialWidth,
+					"initial_height": initialHeight,
+					"initial_size":   initialSize,
 					"width":          width,
 					"height":         height,
-					"initial_size":   initialSize,
 					"size":           size,
 					"dominant_color": img.GetDominantColor(filePath),
 				}, nil
@@ -130,11 +134,11 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 			Args: graphql.FieldConfigArgument{
 				"file_path": &graphql.ArgumentConfig{
 					Type:        graphql.NewNonNull(graphql.String),
-					Description: "File name for the uploaded file",
+					Description: "File path on the server",
 				},
 				"crop_rect": &graphql.ArgumentConfig{
 					Type:        graphql.NewNonNull(inputCropRectObject),
-					Description: "Rectangular area of the image",
+					Description: "Rectangular area of the image to crop",
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
@@ -163,7 +167,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				height, _ := cropRect["height"].(int)
 
 				// Обрезаем  изображение
-				croppedWidth, croppedHeight, croppedSize := img.CropImage(filePath, image.Rect(x, y, x+width, y+height), croppedFilePath)
+				croppedWidth, croppedHeight, croppedSize, initialWidth, initialHeight := img.CropImage(filePath, image.Rect(x, y, x+width, y+height), croppedFilePath)
 
 				// Устанавливаем уровень доступа, для возможности удаления файла другими процессами
 				err = os.Chmod(croppedFilePath, 0777)
@@ -174,9 +178,11 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return map[string]interface{}{
 					"filepath":       img.TrimLocaldir(croppedFilePath),
 					"ext":            filepath.Ext(croppedFilePath),
+					"initial_width":  initialWidth,
+					"initial_height": initialHeight,
+					"initial_size":   initialSize,
 					"width":          croppedWidth,
 					"height":         croppedHeight,
-					"initial_size":   initialSize,
 					"size":           croppedSize,
 					"dominant_color": img.GetDominantColor(croppedFilePath),
 				}, nil
