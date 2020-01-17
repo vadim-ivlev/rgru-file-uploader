@@ -66,7 +66,6 @@ GraphQL-полями  `query` и `variables` в HTTP запросе необхо
         width           ширина сохраненного изображения px      (int)
         height          высота сохраненного изображения px      (int)
         size            размер сохраненного файла bytes         (int)
-        initial_size    размер загруженного файла bytes         (int)
         dominant_color {    
             hex         доминирующий цвет изображения           (string)
             is_light    светлое ли изображение                  (int)
