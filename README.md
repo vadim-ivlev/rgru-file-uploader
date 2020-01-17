@@ -3,7 +3,7 @@
 ## Микросервис загрузки файлов, и обрезки загруженных изображений
 
 
-<img src="images/uploader.png">
+<img style="max-width:700px;" src="images/uploader.png">
 
 
 Загруженные файлы сохраняются в директории указанной в  `configs/img.yaml`.
