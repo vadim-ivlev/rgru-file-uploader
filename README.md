@@ -1,9 +1,11 @@
 # File Uploader
+<div style="font-size:70px; font-weight:bold; color: violet;">FILE UPLOADER</div>
+
 
 ## Микросервис загрузки файлов, и обрезки загруженных изображений
 
 
-<img style="max-width:700px;" src="images/uploader.png">
+<img src="images/uploader.png">
 
 
 Загруженные файлы сохраняются в директории указанной в  `configs/img.yaml`.
