@@ -1,12 +1,11 @@
 # File Uploader
-<div style="font-size:70px; font-weight:bold; color: violet;">FILE UPLOADER</div>
 
 
 ## Микросервис загрузки файлов, и обрезки загруженных изображений
 
-
+<br><br>
 <img src="images/uploader.png">
-
+<br><br><br>
 
 Загруженные файлы сохраняются в директории указанной в  `configs/img.yaml`.
 Файлы сохраняются в поддиректориях вида:
@@ -39,21 +38,36 @@
 
 Конечные точки GraphQL 
 - `/schema` 
-- `/graphql`
 
 
-Методы загрузки файлов:
-- `upload_local_file (file_field_name)` для загрузки локальных файлов
-- `upload_internet_file (file_url)` для загрузки файлов из интернет
+GraphQL Методы:
 
-Оба метода возвращают 
+    upload_internet_file (file_name, file_url)    загрузить файл из интернет
+    upload_local_file    (file_field_name)        загрузить файлов с компьютера
+    crop_image           (file_path, crop_rect)   обрезать загруженный файл
+
+
+**Замечание:** При вызове метода `upload_local_file()`  наряду со стандартными
+GraphQL-полями  `query` и `variables` в HTTP запросе необходимо отправить бинарное поле с
+содержимым файла. Имя этого поля передается в качестве
+параметра в функцию upload_local_file(...), чтобы сервер мог знать откуда
+брать содержимое файла.
+
+Методы возвращают JSON структуры вида:
 
     {
-        filepath        путь к сохраненному файлу 
-        width           ширина сохраненного изображения px
-        height          высота сохраненного изображения px
-        size            размер сохраненного файла bytes
-        initial_size    размер загруженного файла bytes
+        filepath        путь к сохраненному файлу               (string) 
+        initial_width   ширина оригинального изображения px     (int)
+        initial_height  высота оригинального изображения px     (int)
+        initial_size    размер оригинального файла bytes        (int)
+        width           ширина сохраненного изображения px      (int)
+        height          высота сохраненного изображения px      (int)
+        size            размер сохраненного файла bytes         (int)
+        initial_size    размер загруженного файла bytes         (int)
+        dominant_color {    
+            hex         доминирующий цвет изображения           (string)
+            is_light    светлое ли изображение                  (int)
+        }
     }
 
 ## REST
@@ -63,9 +77,20 @@ https://image-loader.rg.ru/uploads + `filepath`.
 <br>Где `filepath` - то, что вернул метод загрузки/обрезки изображения.
 
 
+
+
+
+<br><br><br><br><br><br>
+
+---------------
+
 ### Запуск для разработчика
 
     go run main.go -serve 5500 -env=dev
+
+или
+
+    sh/start.sh
 
 ### Сборка контейнеров для фронтэнд разработчиков
 
