@@ -82,12 +82,25 @@ GraphQL-полями  `query` и `variables` в HTTP запросе необхо
         }
     }
 
+## Контроль состояния системы 
+
+Данные о состоянии приложения: https://image-loader.rg.ru/metrics. 
+
+Маршрут `/metrics` выдает стандартную статистику [Prometheus](https://prometheus.io/) 
+
+
+
 ## REST
 
-Загруженные файлы доступны по URL 
+__Загруженные файлы__ 
+
+доступны по URL 
 https://image-loader.rg.ru/uploads + `filepath`. 
 <br>Где `filepath` - то, что вернул метод загрузки/обрезки изображения.
 
+__Prometheus метрики__
+
+https://image-loader.rg.ru/metrics
 
 
 
