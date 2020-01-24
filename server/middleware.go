@@ -4,25 +4,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 )
-
-var requestsTotal = promauto.NewCounter(prometheus.CounterOpts{
-	Name: "file_uploader_requests_total",
-	Help: "Тотальное количество запросов",
-})
-
-// CountersMiddleware считает запросы
-func CountersMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// считаем все кроме запросов на выдачу статистики
-		if c.Request.URL.Path != "/metrics" {
-			requestsTotal.Inc()
-		}
-		c.Next()
-	}
-}
 
 // HeadersMiddleware добавляет HTTP заголовки к ответу сервера
 func HeadersMiddleware() gin.HandlerFunc {

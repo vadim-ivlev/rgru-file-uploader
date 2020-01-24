@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"rgru-file-uploader/pkg/img"
+	"rgru-file-uploader/pkg/prometeo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,7 +27,7 @@ func PingHandler(c *gin.Context) {
 func Setup() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default() // output to console
-	r.Use(CountersMiddleware())
+	r.Use(prometeo.CountersMiddleware())
 	r.Use(HeadersMiddleware())
 	defineRoutes(r)
 	return r
