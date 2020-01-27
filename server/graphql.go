@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"rgru-file-uploader/pkg/prometeo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/graphql"
@@ -67,6 +68,11 @@ func GraphQL(c *gin.Context) {
 		Context:        context.WithValue(context.Background(), "ginContext", c),
 		VariableValues: variables,
 	})
+
+	if len(result.Errors) > 0 {
+		// инкрементируем счетчик ошибок GraphQL
+		prometeo.GraphQLErrorsTotal.Inc()
+	}
 
 	c.JSON(200, result)
 }
